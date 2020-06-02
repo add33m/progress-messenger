@@ -1,0 +1,24 @@
+{
+
+  "manifest_version": 2,
+
+  "name": "Progress Messenger",
+  "short_name": "Messenger",
+  "author": "Adam Gatmon",
+  "version": "1.0",
+
+  "description": "Allows sending of messages containing HTML within Progress",
+
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://progress.thorengruppen.se/*"],
+      "js": ["messenger.js"]
+    }
+  ]
+
+}
