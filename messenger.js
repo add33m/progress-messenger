@@ -24,7 +24,7 @@ function sendMessageAsHTML() {
 
   var formData = new FormData();
   formData.append("Subject", htmlEncode($('#Subject').val()));
-  formData.append("Body", "<noscript> Detta meddelande har skickats som HTML med Progress Messenger och kanske inte fungerar ordentligt på mobil. För att se meddelandet gå in på https://progress.thorengruppen.se </noscript>\n" + $('#Body').val());
+  formData.append("Body", "<noscript> Detta meddelande har skickats som HTML med Progress Messenger och kanske inte fungerar ordentligt på mobil. För att se meddelandet gå in på https://progress.thorengruppen.se </noscript>\\n" + $('#Body').val() );
   formData.append("SendMail", $('#SendMail:checked').length > 0);
   formData.append("OtherRecipientsHiddenForRecipients", $('#OtherRecipientsHiddenForRecipients:checked').length > 0);
 
