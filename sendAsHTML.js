@@ -1,10 +1,4 @@
-window.addEventListener("click", () => {
-  setTimeout(handleButtonVisibility, 200);
-  setTimeout(handleButtonVisibility, 500); // Execute a second time if computer is too slow and haven't had time to add modal
-});
-
-const scriptString = `
-function sendMessageAsHTML() {
+const functionAsString = `function sendMessageAsHTML() {
   var $form = $("#newMessageForm");
 
   if ($form.valid() === false) {
@@ -24,7 +18,7 @@ function sendMessageAsHTML() {
 
   var formData = new FormData();
   formData.append("Subject", htmlEncode($('#Subject').val()));
-  formData.append("Body", "<noscript> Detta meddelande har skickats som HTML med Progress Messenger och kanske inte fungerar ordentligt på mobil. För att se meddelandet gå in på https://progress.thorengruppen.se </noscript>\\n" + $('#Body').val() );
+  formData.append("Body", "<noscript>\\nDetta meddelande har skickats som HTML med Progress Messenger och kanske inte fungerar ordentligt på mobilappen. För att se meddelandet gå in på https://progress.thorengruppen.se\\n</noscript>" + $('#Body').val() );
   formData.append("SendMail", $('#SendMail:checked').length > 0);
   formData.append("OtherRecipientsHiddenForRecipients", $('#OtherRecipientsHiddenForRecipients:checked').length > 0);
 
@@ -76,29 +70,11 @@ function sendMessageAsHTML() {
   return false;
 }`
 
-const newScript = document.createElement("script");
-newScript.innerHTML = scriptString;
-newScript.type = "text/javascript";
-document.getElementsByTagName("head")[0].appendChild(newScript);
+let scriptElement = document.createElement("script");
+scriptElement.innerHTML = functionAsString;
+scriptElement.type = "text/javascript";
+document.head.appendChild(scriptElement); 
 
-function handleButtonVisibility() { // Add or hide button depending on when it is needed
-  const messageButtonsContainers = document.getElementsByClassName("modal-footer");
-  const messageSendButton = document.getElementById("btnDlgSubmit");
-
-  if (messageButtonsContainers.length > 0 && messageSendButton) {
-    if (document.getElementById("pluginButton")) {
-      if (messageSendButton.style.cssText === "display: none;") {
-        document.getElementById("pluginButton").style.cssText = "display: none;";
-      }
-      return false; // Don't add new button if one already exists
-    }
-
-    const newButton = document.createElement("div");
-    newButton.className = messageSendButton.className;
-    newButton.id = "pluginButton";
-    newButton.setAttribute("onClick","sendMessageAsHTML()");
-    newButton.innerHTML = "<span class='glyphicon glyphicon-send'></span>  Skicka som HTML"; // span tag gives the little paper airplane icon
-
-    messageButtonsContainers[1].insertBefore(newButton, messageSendButton);
-  }
-}
+// The above script is injected into the document so that it can use jquery, which is already loaded into the Progress website.
+// The function is simply a modified version of the normal message sending function, that sends the message 
+// without first HTML encoding the body.
