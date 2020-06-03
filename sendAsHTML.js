@@ -18,12 +18,11 @@ const functionAsString = `function sendMessageAsHTML() {
 
   var formData = new FormData();
   formData.append("Subject", htmlEncode($('#Subject').val()));
-  formData.append("Body", "<noscript>\\nDetta meddelande har skickats som HTML med Progress Messenger och kanske inte fungerar ordentligt på mobilappen. För att se meddelandet gå in på https://progress.thorengruppen.se\\n</noscript>" + $('#Body').val() );
+  formData.append("Body", "<noscript> Detta meddelande har skickats som HTML med Progress Messenger och kanske inte fungerar ordentligt på mobil. För att se meddelandet gå in på https://progress.thorengruppen.se </noscript>\\n" + $('#Body').val() );
   formData.append("SendMail", $('#SendMail:checked').length > 0);
   formData.append("OtherRecipientsHiddenForRecipients", $('#OtherRecipientsHiddenForRecipients:checked').length > 0);
 
   $("#newMessageForm").find('input[name=SendToRedirect]:checked').each(function(i, x) {
-    console.log('SendToRedirectDiv', x.value);
     formData.append("SendToRedirect", htmlEncode(x.value));
   });
 
@@ -53,10 +52,26 @@ const functionAsString = `function sendMessageAsHTML() {
   }).done(function(response) {
     // Close the dialog
     $('#btnDlgSubmit').hide();
-    $('.modal-body').html('' +
-      '<div class="msg-dialog-success">' +
-      Handlebars.compile($('#send-result-template').html())(response) +
-      '</div>');
+    $('#pluginButton').hide();
+
+    const successMessageTemplate = (
+    '<div class="msg-dialog-success">' +
+    ' <h1 class="alert alert-success">Meddelandet har skickats</h1>' +
+    ' <p>Meddelandet skickades till:</p>' +
+    ' <div class="labelbox"></div>' +
+    '</div>');
+    $('.modal-body').html(successMessageTemplate);
+    const labelBox = document.getElementsByClassName("labelbox")[1];
+    for (user of response.resultList) {
+      let userLabel = document.createElement("span");
+      userLabel.className = "label " + window.Progress.actorTypeToClass(user.actorType);
+      userLabel.innerText = user.isGuardianString + " " + user.recipientItem.name;
+      let labelMeta = document.createElement("span");
+      labelMeta.className = "label-meta";
+      labelMeta.innerText = "| " + user.messagesSent;
+      userLabel.appendChild(labelMeta);
+      labelBox.appendChild(userLabel);
+    }
     setModalLoadingState('dlgModalState', 'hidden');
   }).fail(function(jqXHR) {
     if (jqXHR.responseJSON) {
@@ -76,5 +91,4 @@ scriptElement.type = "text/javascript";
 document.head.appendChild(scriptElement); 
 
 // The above script is injected into the document so that it can use jquery, which is already loaded into the Progress website.
-// The function is simply a modified version of the normal message sending function, that sends the message 
-// without first HTML encoding the body.
+// The function is simply a modified version of the normal message sending function where the body is taken directly without being HTML encoded.
